@@ -9,7 +9,6 @@ import numpy as np
 import argparse
 import os
 from networks.IMEXnet import IMEXnet
-from networks.IMEXnet_concat import IMEXnet_concat
 from networks.UNet import UNet
 from networks.network_utils import conv1x1
 import torchnet.meter as tnt
@@ -105,8 +104,8 @@ parser.add_argument('--net_type', '-n', default='imex', type=str, help='either r
 args = parser.parse_args()
 
 
-fig_path = os.path.join('/scratch/klensink/figs/paper/', args.net_type)
-ckpt_dir = os.path.join('/scratch/klensink/figs', args.net_type)
+fig_path = os.path.join('figs/paper/', args.net_type)
+ckpt_dir = os.path.join('figs', args.net_type)
 
 net_ckpt = os.path.join(ckpt_dir, 'net.ckpt')
 state_ckpt = os.path.join(ckpt_dir, 'state.ckpt')

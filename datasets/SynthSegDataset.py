@@ -207,16 +207,12 @@ if __name__ == '__main__':
     data_transforms = transforms.Compose([
         transforms.ToPILImage(),
         transforms.RandomRotation(180),
-        #transforms.RandomHorizontalFlip(),
-        # transforms.CenterCrop((128, 256)),
         transforms.ToTensor()
     ])
 
     # Create dataset generator
-    # train_gen = SynthSegGenerator((280,280), (96, 128), (8, 16), transforms=data_transforms, seed=123)
     train_gen = SynthSegGenerator((64,64), (32, 60), (2, 3), transforms=data_transforms, seed=123)
 
-    # Generate images
-    train_gen(64, '/scratch/klensink/data/synthseg_noise/train/')
-    train_gen(64, '/scratch/klensink/data/synthseg_noise/val/')
-    # val_gen(16, '/scratch/klensink/data/synthseg/val/')
+    # Generate train and val set
+    train_gen(1024, 'data/synthseg_noise/train/')
+    train_gen(64, 'data/synthseg_noise/val/')

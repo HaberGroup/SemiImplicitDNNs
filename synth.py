@@ -178,19 +178,18 @@ if __name__ == '__main__':
 
     W = torch.rand(nClasses, NG[-1, -1], 1, 1)*1e-3
     if args.net_type == 'imex':
-        net = IMEXnet(h, NG)
-        K, L = net.init_weights()
-    elif args.net_type == 'imex_concat':
-        net = IMEXnet_concat(h, NG)
+        net = IMEXnet(h, NG, use_gpu)
         K, L = net.init_weights()
     elif args.net_type == 'resnet':
-        net = IMEXnet(h, NG)
+        net = IMEXnet(h, NG, use_gpu)
         K, L = net.init_weights(L_mode='zero')
     elif args.net_type == 'unet':
         W = None
         K = None
         L = None
         net = UNet(1, nClasses)
+    else:
+        raise NotImplementedError()
 
     if True:
         if is_unet:
@@ -243,6 +242,9 @@ if __name__ == '__main__':
     print('\n Calculating class weights...')
     N = len(train_dataset)
     _, _, weights = dataset_stats(train_dataset, n_classes=4, ex_per_update=10000)
+    weights = (1 - weights)
+    if use_gpu:
+        weights = weights.cuda()
     mean, std = dataset_normalization_stats(train_dataset, ex_per_update=10000)
 
     print('Class Weights', weights, '\n')
@@ -292,9 +294,8 @@ if __name__ == '__main__':
     elif args.net_type=='unet':
         optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.0)
 
-    misfit = nn.CrossEntropyLoss(weight=(1 - weights).cuda())
+    misfit = nn.CrossEntropyLoss(weight=weights)
     softmax = nn.Softmax2d()
-
 
     print(bcolors.BOLD + 'Batches=%d' %(N//batch_size) + bcolors.ENDC)
     best_val_loss = np.Inf

@@ -9,13 +9,14 @@ import matplotlib.pyplot as plt
 
 class IMEXnet(nn.Module):
 
-    def __init__(self, h,NG):
+    def __init__(self, h, NG, use_gpu):
         super().__init__()
 
         _, self.depth = NG.shape
-        self.NG       = NG
-        self.h        = h
-        self.L_mode   = None
+        self.NG = NG
+        self.h = h
+        self.L_mode = None
+        self.use_gpu = use_gpu
 
     def init_weights(self, L_mode='rand'):
         nsteps = self.NG.shape[1]
@@ -44,7 +45,11 @@ class IMEXnet(nn.Module):
 
             Ki   = projectTorchTensor(Ki)
 
-            self.BN.append(nn.BatchNorm2d(self.NG[1,i]).cuda())
+            bni = nn.BatchNorm2d(self.NG[1,i])
+
+            if self.use_gpu:
+                bni = bni.cuda()
+            self.BN.append(bni)
             K.append(Ki)
             L.append(Li)
         
